@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Birdsong — British Bird Call Trainer</title>
+<style>
+:root{--forest:#173f32;--green:#2d6a4f;--sage:#dce9df;--cream:#f7f5ee;--paper:#fffefa;--ink:#20352d;--muted:#718078;--gold:#d5a94d;--red:#b84c42;--line:#e4e8df}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,select{font:inherit}button{cursor:pointer}.shell{max-width:1180px;margin:auto;padding:24px 28px 48px}
+header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:28px}.brand{display:flex;align-items:center;gap:12px;font-weight:850;font-size:1.35rem;letter-spacing:-.04em;color:var(--forest)}.logo{width:43px;height:43px;border-radius:14px;background:var(--forest);display:grid;place-items:center;color:white;font-size:23px}.tag{font-size:.85rem;color:var(--muted)}.header-actions{display:flex;gap:10px;align-items:center}.pill{background:white;border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-size:.88rem}
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px}.side,.card{background:var(--paper);border:1px solid var(--line);border-radius:22px;box-shadow:0 8px 26px #173f3208}.side{padding:18px;height:max-content}.side h3{font-size:.76rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:4px 10px 12px}.nav{display:flex;flex-direction:column;gap:5px}.nav button{border:0;background:transparent;text-align:left;padding:10px 12px;border-radius:12px;color:#53645b;font-size:.93rem}.nav button.active,.nav button:hover{background:var(--sage);color:var(--forest);font-weight:700}.side-note{margin:20px 7px 3px;padding-top:16px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+main{min-width:0}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.13em;font-weight:800;color:var(--green)}h1{font-size:clamp(1.9rem,4vw,2.8rem);line-height:1.08;letter-spacing:-.055em;margin:7px 0 8px;color:var(--forest)}.sub{color:var(--muted);margin:0 0 22px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}.stat{padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:#ffffffa8}.stat small{display:block;color:var(--muted);font-size:.78rem}.stat strong{font-size:1.4rem;color:var(--forest)}
+.quiz{padding:24px}.quiz-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}.round{font-weight:800;font-size:.82rem;color:var(--muted)}.progress{height:6px;background:#e9eee8;border-radius:20px;overflow:hidden;margin-bottom:24px}.progress span{display:block;height:100%;background:var(--green);width:0;transition:width .25s}
+.sound-box{background:linear-gradient(130deg,#e5eee4,#f3f1e7);border-radius:18px;padding:22px;text-align:center;margin-bottom:22px}.bird-mark{font-size:2.3rem;line-height:1.2;margin-bottom:5px}.sound-box h2{font-size:1.15rem;margin:4px 0;color:var(--forest)}.sound-box p{margin:0 0 16px;color:#617267;font-size:.9rem}.play-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}.primary,.secondary{border:0;border-radius:12px;padding:11px 17px;font-weight:750}.primary{background:var(--forest);color:white}.primary:hover{background:#245742}.secondary{background:white;border:1px solid #dce4da;color:var(--forest)}button:disabled{opacity:.5;cursor:not-allowed}.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 18px}.choice{border:1px solid var(--line);background:white;border-radius:14px;padding:14px;text-align:left;display:flex;gap:12px;align-items:center;color:var(--ink);transition:.15s}.choice:hover:not(:disabled){border-color:#87a995;transform:translateY(-1px)}.letter{width:30px;height:30px;border-radius:9px;background:#f0f3ed;display:grid;place-items:center;color:#5e7064;font-weight:800;flex-shrink:0}.choice.correct{background:#e8f4e9;border-color:#5d9c69}.choice.wrong{background:#fbebea;border-color:#cb776f}.choice.correct .letter{background:#cce8d0;color:#245d32}.choice.wrong .letter{background:#f3ceca;color:#8b2f28}
+.feedback{border-radius:14px;padding:15px 16px;margin:14px 0;display:none}.feedback.show{display:block}.feedback.good{background:#e8f4e9;color:#245d32}.feedback.bad{background:#fbebea;color:#87362f}.feedback strong{display:block;margin-bottom:3px}.feedback p{margin:0;font-size:.92rem}.feedback .credit{font-size:.76rem;opacity:.8;margin-top:8px}.bottom-row{display:flex;justify-content:space-between;gap:12px;align-items:center}.hint{color:var(--muted);font-size:.82rem}
+.panel{padding:20px;margin-top:18px}.panel h3{margin:0 0 10px;color:var(--forest)}.bird-list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.bird-chip{padding:10px 12px;background:#f4f6f0;border-radius:11px;font-size:.86rem;display:flex;justify-content:space-between;gap:6px}.bird-chip small{color:var(--muted)}
+.footer{font-size:.8rem;color:var(--muted);margin:18px 3px 0}.settings{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px}.settings label{font-size:.85rem;color:var(--muted)}select{border:1px solid var(--line);background:white;border-radius:10px;padding:9px;color:var(--ink)}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.side{padding:12px}.nav{display:grid;grid-template-columns:repeat(3,1fr)}.side-note{display:none}.bird-list{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.shell{padding:16px 13px 30px}header{align-items:flex-start}.tag{display:none}.header-actions .pill:first-child{display:none}.stats{gap:7px}.stat{padding:10px}.stat strong{font-size:1.15rem}.quiz{padding:15px}.choices{grid-template-columns:1fr}.bottom-row{align-items:stretch;flex-direction:column}.nav{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header>
+  <div class="brand"><div class="logo">♧</div><div>Birdsong<div class="tag">Train your ear. Know your birds.</div></div></div>
+  <div class="header-actions"><span class="pill">🇬🇧 British bird edition</span><span class="pill" id="levelPill">Beginner</span></div>
+</header>
+<div class="layout">
+<aside class="side">
+  <h3>Practice collection</h3>
+  <div class="nav" id="categoryNav">
+    <button class="active" data-cat="All species">🌿 All species</button>
+    <button data-cat="Garden birds">🏡 Garden birds</button>
+    <button data-cat="Woodland">🌳 Woodland</button>
+    <button data-cat="Wetlands">💧 Wetlands</button>
+    <button data-cat="Birds of prey">🦅 Birds of prey</button>
+    <button data-cat="Seabirds">🌊 Seabirds</button>
+    <button data-cat="Farmland">🌾 Farmland</button>
+    <button data-cat="Waders">🐚 Waders</button>
+  </div>
+  <div class="side-note">Your revision schedule is saved in this browser. Miss a bird? It comes back sooner. Know it well? It takes a little break.</div>
+</aside>
+<main>
+  <div class="eyebrow">Your daily fieldwork</div>
+  <h1>Who’s making<br>that sound?</h1>
+  <p class="sub">Listen closely, trust your ears, and build your British bird-call knowledge one sound at a time.</p>
+  <div class="stats">
+    <div class="stat"><small>Correct answers</small><strong id="accuracy">—</strong></div>
+    <div class="stat"><small>Current streak</small><strong id="streak">0 🔥</strong></div>
+    <div class="stat"><small>Birds mastered</small><strong id="mastered">0</strong></div>
+  </div>
+  <section class="card quiz">
+    <div class="quiz-top"><span class="round" id="roundLabel">ROUND 01</span><span class="round" id="categoryLabel">ALL SPECIES</span></div>
+    <div class="progress"><span id="progressBar"></span></div>
+    <div class="sound-box">
+      <div class="bird-mark">🎧</div>
+      <h2 id="soundTitle">Ready to listen?</h2>
+      <p id="soundSub">A short field recording will play here.</p>
+      <div class="play-row">
+        <button class="primary" id="playBtn">▶ Play bird sound</button>
+        <button class="secondary" id="replayBtn" disabled>↻ Replay</button>
+      </div>
+      <audio id="audio" preload="none"></audio>
+    </div>
+    <h2 style="font-size:1.15rem;margin:0">Which bird do you hear?</h2>
+    <p class="hint" style="margin:3px 0 10px">Choose the best match from these four species.</p>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <div class="bottom-row"><span class="hint" id="sourceHint">Real recordings load from the bird-sound library.</span><button class="primary" id="nextBtn" disabled>Next bird →</button></div>
+    <div class="settings">
+      <label>Difficulty
+        <select id="difficulty"><option value="beginner">Beginner · familiar birds</option><option value="mixed" selected>Mixed · all levels</option><option value="challenge">Challenge · trickier choices</option></select>
+      </label>
+      <label>Clip type
+        <select id="clipType"><option value="any">Song or call</option><option value="song">Song only</option><option value="call">Calls only</option></select>
+      </label>
+    </div>
+  </section>
+  <section class="card panel">
+    <h3>Your learning list</h3>
+    <div class="bird-list" id="birdList"></div>
+    <p class="footer">Audio recordings are provided by Xeno-canto where available. Individual recordings may have different licences; credit and source details are shown after answering. Internet access is required for audio.</p>
+  </section>
+</main>
+</div>
+</div>
+<script>
+const birds = [
+{name:"Robin",sci:"Erithacus rubecula",cat:"Garden birds",level:1,note:"A bright, delicate warble with pauses; phrases often vary rather than repeating exactly."},
+{name:"Blackbird",sci:"Turdus merula",cat:"Garden birds",level:1,note:"A mellow, fluty song in separate phrases, often with a little squeaky finish."},
+{name:"Great Tit",sci:"Parus major",cat:"Garden birds",level:1,note:"Often a clear, repeated two-note ‘teacher-teacher’ or see-saw phrase."},
+{name:"Blue Tit",sci:"Cyanistes caeruleus",cat:"Garden birds",level:1,note:"High, fine notes followed by a quick, slightly buzzy trill."},
+{name:"Wren",sci:"Troglodytes troglodytes",cat:"Garden birds",level:1,note:"A surprisingly loud, rapid burst of bright trills and rattles for such a tiny bird."},
+{name:"Dunnock",sci:"Prunella modularis",cat:"Garden birds",level:2,note:"A thin, hurried, slightly scratchy series of high notes."},
+{name:"House Sparrow",sci:"Passer domesticus",cat:"Garden birds",level:1,note:"A busy cluster of chirps and cheeps, often from several birds together."},
+{name:"Starling",sci:"Sturnus vulgaris",cat:"Garden birds",level:2,note:"A varied mix of whistles, clicks, rattles and squeaks; can sound rather imitative."},
+{name:"Wood Pigeon",sci:"Columba palumbus",cat:"Garden birds",level:1,note:"A low, rhythmic coo, commonly heard as a five-part phrase."},
+{name:"Collared Dove",sci:"Streptopelia decaocto",cat:"Garden birds",level:1,note:"A repeated three-part coo, with the middle note often stressed."},
+{name:"Goldfinch",sci:"Carduelis carduelis",cat:"Garden birds",level:2,note:"Liquid, tinkling twittering with quick, bright notes."},
+{name:"Greenfinch",sci:"Chloris chloris",cat:"Garden birds",level:2,note:"A bouncy twitter with a distinctive wheezy, nasal note or trill."},
+{name:"Chaffinch",sci:"Fringilla coelebs",cat:"Garden birds",level:1,note:"A lively descending song, often ending in a little flourish."},
+{name:"Magpie",sci:"Pica pica",cat:"Garden birds",level:1,note:"A harsh, rattling chatter, often with a dry ‘chack-chack’ quality."},
+{name:"Jackdaw",sci:"Coloeus monedula",cat:"Garden birds",level:2,note:"A short, clear, nasal ‘tchack’ call, often repeated by a group."},
+{name:"Song Thrush",sci:"Turdus philomelos",cat:"Woodland",level:2,note:"Short musical phrases repeated two or three times before changing to a new phrase."},
+{name:"Mistle Thrush",sci:"Turdus viscivorus",cat:"Woodland",level:3,note:"A loud, rather fluty song with phrases that can sound more hurried and less neatly repeated."},
+{name:"Wood Warbler",sci:"Phylloscopus sibilatrix",cat:"Woodland",level:3,note:"A distinctive accelerating, spinning trill, often followed by a descending phrase."},
+{name:"Chiffchaff",sci:"Phylloscopus collybita",cat:"Woodland",level:1,note:"A simple repeated ‘chiff-chaff’ rhythm, with clear gaps between notes."},
+{name:"Willow Warbler",sci:"Phylloscopus trochilus",cat:"Woodland",level:2,note:"A gentle, descending cascade of notes, usually more flowing than a Chiffchaff."},
+{name:"Blackcap",sci:"Sylvia atricapilla",cat:"Woodland",level:2,note:"A rich, fluty warble that builds into clearer, louder notes."},
+{name:"Nuthatch",sci:"Sitta europaea",cat:"Woodland",level:2,note:"Clear, sharp piping whistles; calls can sound loud and emphatic."},
+{name:"Treecreeper",sci:"Certhia familiaris",cat:"Woodland",level:3,note:"Very fine, high, thin notes that can be easy to miss."},
+{name:"Tawny Owl",sci:"Strix aluco",cat:"Woodland",level:2,note:"The familiar hooting duet includes a wavering hoot and a sharp ‘ke-wick’ call."},
+{name:"Common Buzzard",sci:"Buteo buteo",cat:"Birds of prey",level:1,note:"A long, mewing ‘kee-yah’ call, often heard circling overhead."},
+{name:"Kestrel",sci:"Falco tinnunculus",cat:"Birds of prey",level:2,note:"A repeated, sharp, shrill ‘kee-kee-kee’ call."},
+{name:"Sparrowhawk",sci:"Accipiter nisus",cat:"Birds of prey",level:3,note:"A rapid series of sharp, high-pitched alarm notes."},
+{name:"Pheasant",sci:"Phasianus colchicus",cat:"Farmland",level:1,note:"A loud, harsh crowing call, often followed by a whirring wingbeat."},
+{name:"Skylark",sci:"Alauda arvensis",cat:"Farmland",level:2,note:"A long, continuous cascade of trills and warbles, often from high overhead."},
+{name:"Yellowhammer",sci:"Emberiza citrinella",cat:"Farmland",level:2,note:"A repeated phrase often remembered as ‘a little bit of bread and no cheese’."},
+{name:"Rook",sci:"Corvus frugilegus",cat:"Farmland",level:2,note:"A rough, nasal caw, often heard in noisy groups."},
+{name:"Carrion Crow",sci:"Corvus corone",cat:"Farmland",level:1,note:"A familiar, fairly harsh ‘caw-caw’, usually lower and more open than a Jackdaw."},
+{name:"Mallard",sci:"Anas platyrhynchos",cat:"Wetlands",level:1,note:"The female’s familiar quacking call; males also give quieter, rasping calls."},
+{name:"Moorhen",sci:"Gallinula chloropus",cat:"Wetlands",level:2,note:"A sharp, abrupt, squealing or clucking call."},
+{name:"Coot",sci:"Fulica atra",cat:"Wetlands",level:2,note:"A variety of short, sharp, nasal or explosive calls."},
+{name:"Grey Heron",sci:"Ardea cinerea",cat:"Wetlands",level:1,note:"A harsh, croaking squawk, especially in flight."},
+{name:"Oystercatcher",sci:"Haematopus ostralegus",cat:"Waders",level:2,note:"A loud, piping, ringing call that can become a rapid bubbling chorus."},
+{name:"Curlew",sci:"Numenius arquata",cat:"Waders",level:2,note:"A haunting, bubbling ‘cur-lee’ call, often rising and falling."},
+{name:"Lapwing",sci:"Vanellus vanellus",cat:"Waders",level:2,note:"A wavering, squeaky ‘pee-wit’ call, often repeated in flight."},
+{name:"Redshank",sci:"Tringa totanus",cat:"Waders",level:3,note:"A sharp, piping alarm call with repeated notes."},
+{name:"Herring Gull",sci:"Larus argentatus",cat:"Seabirds",level:1,note:"A loud, laughing, yelping series of calls."},
+{name:"Lesser Black-backed Gull",sci:"Larus fuscus",cat:"Seabirds",level:2,note:"A gull-like yelping call; compare its rhythm and pitch with other gulls."},
+{name:"Fulmar",sci:"Fulmarus glacialis",cat:"Seabirds",level:3,note:"A nasal, chuckling, groaning call around coastal cliffs."},
+{name:"Gannet",sci:"Morus bassanus",cat:"Seabirds",level:3,note:"A rough, guttural croak or rattle, often heard in colonies."},
+{name:"Swift",sci:"Apus apus",cat:"Garden birds",level:1,note:"A piercing, high-pitched scream, often given by fast-flying groups."},
+{name:"Green Woodpecker",sci:"Picus viridis",cat:"Woodland",level:1,note:"A laughing, descending ‘yaffle’ call."},
+{name:"Great Spotted Woodpecker",sci:"Dendrocopos major",cat:"Woodland",level:2,note:"A sharp ‘kik’ call; drumming can also be heard in spring."},
+{name:"Cuckoo",sci:"Cuculus canorus",cat:"Woodland",level:1,note:"The classic two-note call of the male; other calls sound very different."},
+{name:"Firecrest",sci:"Regulus ignicapilla",cat:"Woodland",level:3,note:"Extremely high, thin, fine notes, often ending in a little flourish."},
+{name:"Goldcrest",sci:"Regulus regulus",cat:"Woodland",level:3,note:"Very high, delicate, thin notes; often difficult to hear clearly."}
+];
+const $=id=>document.getElementById(id);
+let currentCategory="All species", current=null, options=[], answered=false, round=0, streak=0, correct=0, total=0;
+let stats=JSON.parse(localStorage.getItem("birdsongStats")||"{}");
+function getStat(b){return stats[b.sci]||{due:0,seen:0,right:0,streak:0}}
+function save(){localStorage.setItem("birdsongStats",JSON.stringify(stats))}
+function pool(){let p=birds.filter(b=>currentCategory==="All species"||b.cat===currentCategory);const d=$("difficulty").value;if(d==="beginner")p=p.filter(b=>b.level<=2);if(d==="challenge")p=p.filter(b=>b.level>=2);return p}
+function pickWeighted(list){const now=Date.now();let weights=list.map(b=>{const s=getStat(b);let w=1+Math.max(0,now-s.due)/86400000*.18;if(s.streak>=3)w*=.35;if(s.seen===0)w*=1.3;return Math.min(w,5)});let r=Math.random()*weights.reduce((a,b)=>a+b,0);for(let i=0;i<list.length;i++){r-=weights[i];if(r<=0)return list[i]}return list[list.length-1]}
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function renderStats(){let seen=Object.values(stats).reduce((n,s)=>n+s.seen,0),rights=Object.values(stats).reduce((n,s)=>n+s.right,0),mastered=birds.filter(b=>getStat(b).streak>=3).length;$("accuracy").textContent=seen?Math.round(rights/seen*100)+"%":"—";$("streak").textContent=streak+" 🔥";$("mastered").textContent=mastered;$("levelPill").textContent=mastered>15?"Field expert":mastered>5?"Keen birder":"Beginner"}
+function renderBirdList(){let list=birds.filter(b=>currentCategory==="All species"||b.cat===currentCategory);$("birdList").innerHTML=list.map(b=>{let s=getStat(b);return `<div class="bird-chip"><span>${b.name}</span><small>${s.seen?`${s.right}/${s.seen}`:"New"}</small></div>`}).join("")}
+function setFeedback(type,title,msg,credit=""){const f=$("feedback");f.className="feedback show "+type;f.innerHTML=`<strong>${title}</strong><p>${msg}</p>${credit?`<div class="credit">${credit}</div>`:""}`}
+async function loadRound(){
+ answered=false;round++;$("roundLabel").textContent="ROUND "+String(round).padStart(2,"0");$("categoryLabel").textContent=currentCategory.toUpperCase();$("progressBar").style.width=((round-1)%20+1)*5+"%";$("feedback").className="feedback";$("feedback").innerHTML="";$("nextBtn").disabled=true;$("replayBtn").disabled=true;$("playBtn").disabled=false;$("playBtn").textContent="▶ Play bird sound";$("soundTitle").textContent="Finding a field recording…";$("soundSub").textContent="Loading a real bird sound";$("choices").innerHTML="";
+ const p=pool();if(!p.length){$("soundTitle").textContent="No birds in this collection";return}
+ current=pickWeighted(p);const others=shuffle(p.filter(b=>b.sci!==current.sci)).slice(0,3);options=shuffle([current,...others]);
+ $("choices").innerHTML=options.map((b,i)=>`<button class="choice" data-sci="${b.sci}"><span class="letter">${String.fromCharCode(65+i)}</span><span>${b.name}</span></button>`).join("");
+ document.querySelectorAll(".choice").forEach(btn=>btn.addEventListener("click",()=>answer(btn.dataset.sci)));
+ $("soundTitle").textContent="Listen to the mystery bird";$("soundSub").textContent="Tap play, then choose the species you think you hear.";
+ $("sourceHint").textContent="Searching for a suitable recording…"; $("audio").pause();$("audio").removeAttribute("src");$("audio").load();
+ try{
+  let query=`sp:${current.sci.replaceAll(" ","+")} cnt:United+Kingdom`;
+  const type=$("clipType").value;if(type==="song")query+=" type:song";if(type==="call")query+=" type:call";
+  const url="https://www.xeno-canto.org/api/2/recordings?query="+encodeURIComponent(query);
+  const res=await fetch(url);if(!res.ok)throw Error("Library request failed");const data=await res.json();
+  let recs=(data.recordings||[]).filter(r=>r.file && (!r.lic || !r.lic.toLowerCase().includes("by-nc-nd"))).sort((a,b)=>qualityScore(b)-qualityScore(a));
+  if(!recs.length){const q2="https://www.xeno-canto.org/api/2/recordings?query="+encodeURIComponent(`sp:${current.sci.replaceAll(" ","+")}`);const r2=await fetch(q2);const d2=await r2.json();recs=(d2.recordings||[]).filter(r=>r.file).sort((a,b)=>qualityScore(b)-qualityScore(a))}
+  if(!recs.length)throw Error("No recording found");
+  const rec=recs[Math.floor(Math.random()*Math.min(5,recs.length))];current.rec=rec;$("audio").src=rec.file.startsWith("//")?"https:"+rec.file:rec.file;$("audio").load();$("replayBtn").disabled=false;$("sourceHint").textContent=`Recording: ${rec.rec||"Xeno-canto contributor"} · ${rec.id||"XC"} · ${rec.lic||"licence details on source"}`;
+ }catch(e){$("soundSub").textContent="This recording could not load automatically. You can still practise the species, or try the source link after answering."; $("sourceHint").innerHTML=`Audio service unavailable. <a target="_blank" rel="noopener" href="https://www.xeno-canto.org/species/${encodeURIComponent(current.sci)}">Find recordings</a>`;$("replayBtn").disabled=true}
+ renderStats();renderBirdList();
+}
+function qualityScore(r){let q=({A:5,B:4,C:3,D:2,E:1})[r.q]||0;return q+(r.length?Math.max(0,1-parseInt(r.length.split(":")[0])/120):0)}
+function answer(sci){if(answered)return;answered=true;total++;let right=sci===current.sci;const s=getStat(current);s.seen++;if(right){correct++;streak++;s.right++;s.streak++;s.due=Date.now()+Math.min(30,Math.pow(2,s.streak))*86400000}else{streak=0;s.streak=0;s.due=Date.now()+5*60*1000}stats[current.sci]=s;save();document.querySelectorAll(".choice").forEach(btn=>{btn.disabled=true;if(btn.dataset.sci===current.sci)btn.classList.add("correct");if(btn.dataset.sci===sci&&!right)btn.classList.add("wrong")});
+ const rec=current.rec;let credit=rec?`Recording ${rec.id||""} by ${rec.rec||"Xeno-canto contributor"} · ${rec.lic||"check source licence"} · <a href="https://www.xeno-canto.org/${rec.id}" target="_blank" rel="noopener">Recording details ↗</a>`:"";
+ setFeedback(right?"good":"bad",right?"Correct — lovely listening!":"Not quite — now you’ll know it next time.",`That was a ${current.name}. ${current.note} ${right?"You’ll see this bird less often as your confidence grows.":"We’ll bring this species back again soon for another try."}`,credit);
+ $("nextBtn").disabled=false;$("playBtn").textContent="▶ Play bird sound";renderStats();renderBirdList();
+}
+$("playBtn").addEventListener("click",async()=>{if(!$("audio").src){if(current){$("soundSub").textContent="No playable recording is ready. Try the source link below or move to the next round.";return}}try{await $("audio").play();$("playBtn").textContent="Ⅱ Playing…"}catch(e){$("soundSub").textContent="Playback was blocked or the recording is unavailable. Try Replay or another bird."}});
+$("replayBtn").addEventListener("click",async()=>{try{$("audio").currentTime=0;await $("audio").play();$("playBtn").textContent="Ⅱ Playing…"}catch(e){}});
+$("audio").addEventListener("ended",()=>{$("playBtn").textContent="▶ Play bird sound"});
+$("nextBtn").addEventListener("click",loadRound);
+$("difficulty").addEventListener("change",()=>{round=0;loadRound()});$("clipType").addEventListener("change",()=>{round=0;loadRound()});
+document.querySelectorAll("#categoryNav button").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll("#categoryNav button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");currentCategory=btn.dataset.cat;round=0;loadRound()}));
+loadRound();
+</script>
+</body>
+</html>
