@@ -75,7 +75,11 @@ main{min-width:0}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spaci
       <label>Clip type
         <select id="clipType"><option value="any">Song or call</option><option value="song">Song only</option><option value="call">Calls only</option></select>
       </label>
+      <label style="min-width:min(100%,280px)">Xeno-canto API key
+        <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your own API key here" style="display:block;width:100%;margin-top:5px;border:1px solid var(--line);background:white;border-radius:10px;padding:9px;color:var(--ink)">
+      </label>
     </div>
+    <p class="footer">Your key is kept in this page's memory and is not saved to the site or browser storage. This is a public front-end, so the key may still be visible in browser network tools while requests are made; use a server-side proxy if you need a genuinely private key.</p>
   </section>
   <section class="card panel">
     <h3>Your learning list</h3>
@@ -157,16 +161,33 @@ async function loadRound(){
  document.querySelectorAll(".choice").forEach(btn=>btn.addEventListener("click",()=>answer(btn.dataset.sci)));
  $("soundTitle").textContent="Listen to the mystery bird";$("soundSub").textContent="Tap play, then choose the species you think you hear.";
  $("sourceHint").textContent="Searching for a suitable recording…"; $("audio").pause();$("audio").removeAttribute("src");$("audio").load();
+ const apiKey=$("apiKey").value.trim();
+ if(!apiKey){$("soundSub").textContent="Enter your Xeno-canto API key in the settings below, then it will load a recording.";$("sourceHint").textContent="API key needed for Xeno-canto API v3.";renderStats();renderBirdList();return}
  try{
-  let query=`sp:${current.sci.replaceAll(" ","+")} cnt:United+Kingdom`;
-  const type=$("clipType").value;if(type==="song")query+=" type:song";if(type==="call")query+=" type:call";
-  const url="https://www.xeno-canto.org/api/2/recordings?query="+encodeURIComponent(query);
-  const res=await fetch(url);if(!res.ok)throw Error("Library request failed");const data=await res.json();
-  let recs=(data.recordings||[]).filter(r=>r.file && (!r.lic || !r.lic.toLowerCase().includes("by-nc-nd"))).sort((a,b)=>qualityScore(b)-qualityScore(a));
-  if(!recs.length){const q2="https://www.xeno-canto.org/api/2/recordings?query="+encodeURIComponent(`sp:${current.sci.replaceAll(" ","+")}`);const r2=await fetch(q2);const d2=await r2.json();recs=(d2.recordings||[]).filter(r=>r.file).sort((a,b)=>qualityScore(b)-qualityScore(a))}
-  if(!recs.length)throw Error("No recording found");
-  const rec=recs[Math.floor(Math.random()*Math.min(5,recs.length))];current.rec=rec;$("audio").src=rec.file.startsWith("//")?"https:"+rec.file:rec.file;$("audio").load();$("replayBtn").disabled=false;$("sourceHint").textContent=`Recording: ${rec.rec||"Xeno-canto contributor"} · ${rec.id||"XC"} · ${rec.lic||"licence details on source"}`;
- }catch(e){$("soundSub").textContent="This recording could not load automatically. You can still practise the species, or try the source link after answering."; $("sourceHint").innerHTML=`Audio service unavailable. <a target="_blank" rel="noopener" href="https://www.xeno-canto.org/species/${encodeURIComponent(current.sci)}">Find recordings</a>`;$("replayBtn").disabled=true}
+  const makeQuery=(includeCountry)=>{
+   let q=`sp:"${current.sci}"`;
+   if(includeCountry)q+=' cnt:"United Kingdom"';
+   const type=$("clipType").value;if(type==="song")q+=' type:song';if(type==="call")q+=' type:call';
+   return q;
+  };
+  async function getRecordings(query){
+   const url=new URL("https://www.xeno-canto.org/api/3/recordings");url.searchParams.set("query",query);url.searchParams.set("key",apiKey);
+   const res=await fetch(url.toString());if(!res.ok)throw Error(`Xeno-canto returned HTTP ${res.status}`);
+   const data=await res.json();if(data.error)throw Error(data.error.message||"Xeno-canto API error");return data.recordings||[];
+  }
+  let recs=await getRecordings(makeQuery(true));
+  if(!recs.length)recs=await getRecordings(makeQuery(false));
+  recs=recs.filter(r=>r.file).sort((a,b)=>qualityScore(b)-qualityScore(a));
+  if(!recs.length)throw Error("No recordings found for this species and clip type.");
+  const rec=recs[Math.floor(Math.random()*Math.min(5,recs.length))];current.rec=rec;
+  $("audio").src=rec.file.startsWith("//")?"https:"+rec.file:rec.file;$("audio").load();$("replayBtn").disabled=false;
+  $("sourceHint").textContent=`Recording: ${rec.rec||"Xeno-canto contributor"} · XC${rec.id||""} · ${rec.lic||"check licence on source"}`;
+ }catch(e){
+  console.error("Birdsong audio error:",e);
+  $("soundSub").textContent="The recording could not be loaded. Check that the API key is correct and try another bird.";
+  $("sourceHint").innerHTML=`Xeno-canto request failed. <a target="_blank" rel="noopener" href="https://xeno-canto.org/explore?query=${encodeURIComponent(current.sci)}">Search this species on Xeno-canto ↗</a>`;
+  $("replayBtn").disabled=true;
+ }
  renderStats();renderBirdList();
 }
 function qualityScore(r){let q=({A:5,B:4,C:3,D:2,E:1})[r.q]||0;return q+(r.length?Math.max(0,1-parseInt(r.length.split(":")[0])/120):0)}
@@ -180,6 +201,7 @@ $("replayBtn").addEventListener("click",async()=>{try{$("audio").currentTime=0;a
 $("audio").addEventListener("ended",()=>{$("playBtn").textContent="▶ Play bird sound"});
 $("nextBtn").addEventListener("click",loadRound);
 $("difficulty").addEventListener("change",()=>{round=0;loadRound()});$("clipType").addEventListener("change",()=>{round=0;loadRound()});
+$("apiKey").addEventListener("change",()=>{round=Math.max(0,round-1);loadRound()});
 document.querySelectorAll("#categoryNav button").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll("#categoryNav button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");currentCategory=btn.dataset.cat;round=0;loadRound()}));
 loadRound();
 </script>
